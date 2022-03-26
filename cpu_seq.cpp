@@ -20,7 +20,7 @@ void mul_vec_cpu(int * a, int * b, int * c, int size)
 int main()
 {
     printf("Array Size, CPU Time\n");
-	for (int size = 100; size < MAX_SIZE; size *= 10) {
+	for (int size = 100; size <= MAX_SIZE; size *= 10) {
         int block_size = 128;
 
         //number of bytes needed to hold element count
@@ -59,7 +59,7 @@ int main()
         cpu_end = clock();
 
 
-        printf("%d, %f\n", size,
+        printf("%d, %4.6f\n", size,
             (double)((double)(cpu_end - cpu_start) / CLOCKS_PER_SEC));
 
                 

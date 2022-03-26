@@ -85,16 +85,16 @@ int main()
 
         printf("%d,", size);
 
-        printf("%f,",
+        printf("%4.6f,",
             (double)((double)(gpu_end - gpu_start) / CLOCKS_PER_SEC));
 
-        printf("%f,",
+        printf("%4.6f,",
             (double)((double)(mem_htod_end - mem_htod_start) / CLOCKS_PER_SEC));
 
-        printf("%f,",
+        printf("%4.6f,",
             (double)((double)(mem_dtoh_end - mem_dtoh_start) / CLOCKS_PER_SEC));
 
-        printf("%f",
+        printf("%4.6f",
             (double)((double)((mem_htod_end - mem_htod_start)
                 + (gpu_end - gpu_start)
                 + (mem_dtoh_end - mem_dtoh_start)) / CLOCKS_PER_SEC));
