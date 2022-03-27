@@ -9,7 +9,17 @@
 //for memset
 #include <cstring>
 
-#define MAX_SIZE 100000000
+#ifndef MAX_SIZE
+    #define MAX_SIZE 100000000
+#endif
+
+#ifndef MIN_SIZE
+    #define MIN_SIZE 1000
+#endif
+
+#ifndef BLOCK_SIZE
+    #define BLOCK_SIZE 128
+#endif
 
 __global__ void mul_vec_gpu(int * a, int * b, int* c, int size)
 {
@@ -22,8 +32,8 @@ __global__ void mul_vec_gpu(int * a, int * b, int* c, int size)
 int main()
 {
     printf("Array Size, GPU Kernel Time, Host to Device Time, Device to Host Time, Total GPU Time\n");
-    for (int size = 100; size <= MAX_SIZE; size *= 10) {
-        int block_size = 128;
+    for (int size = MIN_SIZE; size <= MAX_SIZE; size *= 10) {
+        int block_size = BLOCK_SIZE;
         cudaError error;
 
         //number of bytes needed to hold element count

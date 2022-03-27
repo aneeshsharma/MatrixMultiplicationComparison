@@ -5,13 +5,18 @@
 #include <time.h>
 #include <cstring>
 
-#define MAX_SIZE 100000000
+#ifndef MAX_SIZE
+    #define MAX_SIZE 100000000
+#endif
+
+#ifndef MIN_SIZE
+    #define MIN_SIZE 1000
+#endif
 
 void mul_vec_openmp(int* a, int* b, int* c, int size) 
 {
     int i;
-    omp_set_num_threads(omp_get_num_procs()); 
-    #pragma omp parallel for private(i) shared(a,b,c)
+    #pragma omp parallel for private(i) shared(a,b,c) num_threads(16)
     for (i = 0; i < size; ++i) {
         c[i] += a[i] * b[i];
     }
@@ -20,7 +25,7 @@ void mul_vec_openmp(int* a, int* b, int* c, int size)
 int main()
 {
     printf("Array Size, CPU Time\n");
-	for (int size = 100; size <= MAX_SIZE; size *= 10) {
+	for (int size = MIN_SIZE; size <= MAX_SIZE; size *= 10) {
         int block_size = 128;
 
         //number of bytes needed to hold element count
