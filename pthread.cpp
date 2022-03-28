@@ -1,24 +1,52 @@
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <time.h>
 #include <cstring>
+#include <pthread.h>
 
 #ifndef MAX_SIZE
-    #define MAX_SIZE 100000000
+    #define MAX_SIZE 10000000
 #endif
 
 #ifndef MIN_SIZE
     #define MIN_SIZE 1000
 #endif
 
-void mul_vec_openmp(int* a, int* b, int* c, int size) 
-{
-    int i;
-    #pragma omp parallel for private(i) shared(a,b,c) num_threads(8)
-    for (i = 0; i < size; ++i) {
-        c[i] += a[i] * b[i];
+#ifndef THREAD_COUNT
+    #define THREAD_COUNT 8
+#endif
+
+struct ThreadParam {
+    int* a;
+    int* b;
+    int* c;
+    int size;
+    int ti;
+    int step;
+};
+
+void* worker(void* ptr) {
+    struct ThreadParam* param = (struct ThreadParam*) ptr;
+
+    int size = param->size;
+    int step = param->step;
+    for (int i = param->ti; i < size; i += step) {
+        param->c[i] = param->a[i] * param->b[i];
+    }
+
+    return 0;
+}
+
+void mul_vec_pthread(int* a, int* b, int* c, int size) {
+    pthread_t threads[THREAD_COUNT];
+    struct ThreadParam param[THREAD_COUNT];
+    for (int i = 0; i < THREAD_COUNT; i++) {
+        param[i] = { a, b, c, size, i, THREAD_COUNT};
+        pthread_create(&threads[i], NULL, worker, (void*) &param[i]);
+    }
+
+    for (int i = 0; i < THREAD_COUNT; i++) {
+        pthread_join(threads[i], NULL);
     }
 }
 
@@ -60,13 +88,12 @@ int main()
         //multiplication in CPU
         clock_t cpu_start, cpu_end;
         cpu_start = clock();
-        mul_vec_openmp(h_a, h_b, cpu_result, size);
+        mul_vec_pthread(h_a, h_b, cpu_result, size);
         cpu_end = clock();
 
 
         printf("%d, %4.6f\n", size,
             (double)((double)(cpu_end - cpu_start) / CLOCKS_PER_SEC));
-
                 
         free(h_a);
         free(h_b);		

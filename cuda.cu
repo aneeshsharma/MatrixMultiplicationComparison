@@ -31,10 +31,9 @@ __global__ void mul_vec_gpu(int * a, int * b, int* c, int size)
 
 int main()
 {
-    printf("Array Size, GPU Kernel Time, Host to Device Time, Device to Host Time, Total GPU Time\n");
-    for (int size = MIN_SIZE; size <= MAX_SIZE; size *= 10) {
+    printf("Array Size, Total GPU Time\n");
+    for (int size = MIN_SIZE; size <= MAX_SIZE; size *= 2) {
         int block_size = BLOCK_SIZE;
-        cudaError error;
 
         //number of bytes needed to hold element count
         size_t NO_BYTES = size * sizeof(int);
@@ -94,15 +93,6 @@ int main()
         mem_dtoh_end = clock();
 
         printf("%d,", size);
-
-        printf("%4.6f,",
-            (double)((double)(gpu_end - gpu_start) / CLOCKS_PER_SEC));
-
-        printf("%4.6f,",
-            (double)((double)(mem_htod_end - mem_htod_start) / CLOCKS_PER_SEC));
-
-        printf("%4.6f,",
-            (double)((double)(mem_dtoh_end - mem_dtoh_start) / CLOCKS_PER_SEC));
 
         printf("%4.6f",
             (double)((double)((mem_htod_end - mem_htod_start)
